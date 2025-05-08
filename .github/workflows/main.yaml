@@ -5,21 +5,26 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Deploy to Heroku using Docker
-        uses: akhileshns/heroku-deploy@v3.12.12
-        with:
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
-          heroku_email: ${{ secrets.HEROKU_EMAIL }}
-          usedocker: true
-          docker_heroku_process_type: web
-          dockerfile_directory: ./
-          dockerfile_name: Dockerfile
-          docker_options: "--no-cache"
+      - name: Install Heroku CLI
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh
+          echo "export PATH=$PATH:/usr/local/bin" >> $GITHUB_ENV
+
+      - name: Login to Heroku Container Registry
+        run: echo "${{ secrets.HEROKU_API_KEY }}" | heroku auth:token
+
+      - name: Container login
+        run: heroku container:login
+
+      - name: Push Docker image to Heroku
+        run: heroku container:push web --app ${{ secrets.HEROKU_APP_NAME }}
+
+      - name: Release Docker image on Heroku
+        run: heroku container:release web --app ${{ secrets.HEROKU_APP_NAME }}
