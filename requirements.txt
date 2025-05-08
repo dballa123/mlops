@@ -1,6 +1,5 @@
 setuptools<58.0
 Flask
-sklearn
 pandas
 numpy
 matplotlib
