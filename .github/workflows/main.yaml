@@ -18,6 +18,10 @@ jobs:
       - name: Install Heroku CLI
         run: curl https://cli-assets.heroku.com/install.sh | sh
 
+      - name: Login to Heroku Container Registry
+        run: heroku container:login
+
+
 ### ⬇ IMPORTANT PART ⬇ ###
 
       - name: Build, Push and Release a Docker container to Heroku. # Your custom step name
@@ -36,6 +40,8 @@ jobs:
           
           # Name of the heroku application to which the build is to be sent.
           heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+
+          usedocker: true
 
           # (Optional, default: "./")
           # Dockerfile directory.
